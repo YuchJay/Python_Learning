@@ -1,3 +1,4 @@
+import os
 import pygame
 from pygame.sprite import Sprite
 
@@ -8,7 +9,7 @@ class Ship(Sprite): #管理飞船的类
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
 
-        self.image = pygame.image.load('images/ship.png') #加载飞船图像
+        self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), 'images', 'ship.png')) #加载飞船图像
         self.rect = self.image.get_rect() #获取其外接矩形
 
         self.rect.midbottom = self.screen_rect.midbottom #对于每艘新飞船，都将其放在屏幕底部的中央

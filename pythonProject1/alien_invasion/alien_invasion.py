@@ -2,7 +2,6 @@ import sys
 from time import sleep
 
 import pygame
-from pygame.examples import aliens
 
 from settings import Settings
 from game_stats import GameStats
