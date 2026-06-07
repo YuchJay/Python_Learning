@@ -1,6 +1,10 @@
 import pygame.font
 
+
 class Button:
+    # 类级别字体缓存 —— 所有按钮共享同一个Font对象
+    _font_cache = None
+
     def __init__(self, ai_game, msg): #初始化按钮的属性
         self.screen = ai_game.screen
         self.screen_rect = self.screen.get_rect()
@@ -9,7 +13,11 @@ class Button:
         self.width, self.height = 200, 50
         self.button_color = (0, 255, 0)
         self.text_color = (255, 255, 255)
-        self.font = pygame.font.SysFont(None, 48)
+
+        # 懒加载：首次创建Button时初始化字体，后续复用
+        if Button._font_cache is None:
+            Button._font_cache = pygame.font.SysFont(None, 48)
+        self.font = Button._font_cache
 
         #创建按钮的rect对象，并使其居中
         self.rect = pygame.Rect(0, 0, self.width, self.height)

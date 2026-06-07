@@ -3,6 +3,7 @@ from pygame.sprite import Group
 
 from ship import Ship
 
+
 class Scoreboard: #显示得分信息的类
     def __init__(self, ai_game): #初始化显示得分涉及的属性
         self.ai_game = ai_game
@@ -12,8 +13,12 @@ class Scoreboard: #显示得分信息的类
         self.stats = ai_game.stats
 
         #显示得分信息时使用的字体设置
-        self.text_color = (30, 30, 30)
+        self.text_color = (230, 230, 250)  # 浅色文字适配深色太空背景
         self.font = pygame.font.SysFont(None, 48)
+
+        # 预创建飞船图标的精灵组（复用以避免重复创建Group对象）
+        self.ships = Group()
+
         #准备包含最高得分和当前得分的图像
         self.prep_score()
         self.prep_high_score()
@@ -50,7 +55,8 @@ class Scoreboard: #显示得分信息的类
         self.level_rect.top = self.score_rect.bottom + 10
 
     def prep_ships(self): #显示还余下多少飞船
-        self.ships = Group()
+        # 清空旧的飞船图标，复用Group对象
+        self.ships.empty()
         for ship_number in range(self.stats.ships_left):
             ship = Ship(self.ai_game)
             ship.rect.x = 10 + ship_number * ship.rect.width
@@ -67,3 +73,5 @@ class Scoreboard: #显示得分信息的类
         if self.stats.score > self.stats.high_score:
             self.stats.high_score = self.stats.score
             self.prep_high_score()
+            # 新纪录产生时立即持久化到文件
+            self.stats.save_high_score()

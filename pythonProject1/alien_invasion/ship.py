@@ -3,13 +3,20 @@ import pygame
 from pygame.sprite import Sprite
 
 class Ship(Sprite): #管理飞船的类
+    # 类级别图像缓存 —— 只从磁盘加载一次，所有实例共享
+    _image_cache = None
+
     def __init__(self, ai_game): #初始化飞船并设置其初始位置
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
 
-        self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), 'images', 'ship.png')) #加载飞船图像
+        # 懒加载：首次创建Ship时从磁盘加载图像，后续实例直接复用
+        if Ship._image_cache is None:
+            image_path = os.path.join(os.path.dirname(__file__), 'images', 'ship.png')
+            Ship._image_cache = pygame.image.load(image_path)
+        self.image = Ship._image_cache
         self.rect = self.image.get_rect() #获取其外接矩形
 
         self.rect.midbottom = self.screen_rect.midbottom #对于每艘新飞船，都将其放在屏幕底部的中央

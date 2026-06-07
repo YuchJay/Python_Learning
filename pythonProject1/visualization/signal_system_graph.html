@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#1E90FF", "font": {"color": "white"}, "id": "Time_Continuous", "label": "\u8fde\u7eed\u65f6\u95f4\u57df (t)", "shape": "dot", "size": 30}, {"color": "#1E90FF", "font": {"color": "white"}, "id": "Time_Discrete", "label": "\u79bb\u6563\u65f6\u95f4\u57df (n)", "shape": "dot", "size": 30}, {"color": "#00BFFF", "font": {"color": "white"}, "id": "Freq_Continuous", "label": "\u8fde\u7eed\u9891\u57df (\u03a9)", "shape": "dot", "size": 30}, {"color": "#00BFFF", "font": {"color": "white"}, "id": "Freq_Discrete", "label": "\u79bb\u6563\u9891\u57df (\u03c9)", "shape": "dot", "size": 30}, {"color": "#4169E1", "font": {"color": "white"}, "id": "S_Domain", "label": "s\u590d\u9891\u57df (\u62c9\u6c0f\u5e73\u9762)", "shape": "dot", "size": 35}, {"color": "#4169E1", "font": {"color": "white"}, "id": "Z_Domain", "label": "z\u590d\u9891\u57df (Z\u5e73\u9762)", "shape": "dot", "size": 35}, {"color": "#FF4500", "font": {"color": "white"}, "id": "FT", "label": "\u5085\u91cc\u53f6\u53d8\u6362 (FT)", "shape": "dot", "size": 40}, {"color": "#FF6347", "font": {"color": "white"}, "id": "FS", "label": "\u5085\u91cc\u53f6\u7ea7\u6570 (FS)", "shape": "dot", "size": 35}, {"color": "#FF4500", "font": {"color": "white"}, "id": "DTFT", "label": "\u79bb\u6563\u65f6\u95f4\u5085\u91cc\u53f6\u53d8\u6362\n(DTFT)", "shape": "dot", "size": 40}, {"color": "#FF7F50", "font": {"color": "white"}, "id": "DFT", "label": "\u79bb\u6563\u5085\u91cc\u53f6\u53d8\u6362\n(DFT/FFT)", "shape": "dot", "size": 35}, {"color": "#FF1493", "font": {"color": "white"}, "id": "LT", "label": "\u62c9\u666e\u62c9\u65af\u53d8\u6362 (LT)", "shape": "dot", "size": 45}, {"color": "#FF1493", "font": {"color": "white"}, "id": "ZT", "label": "Z\u53d8\u6362 (ZT)", "shape": "dot", "size": 45}, {"color": "#32CD32", "font": {"color": "white"}, "id": "ROC", "label": "\u6536\u655b\u57df (ROC)", "shape": "dot", "size": 25}, {"color": "#32CD32", "font": {"color": "white"}, "id": "Stability", "label": "\u7cfb\u7edf\u7a33\u5b9a\u6027", "shape": "dot", "size": 25}, {"color": "#2E8B57", "font": {"color": "white"}, "id": "Pole_Zero", "label": "\u96f6\u6781\u70b9\u5206\u5e03", "shape": "dot", "size": 25}, {"color": "#00FF7F", "font": {"color": "white"}, "id": "Sampling", "label": "\u65f6\u57df\u62bd\u6837\u5b9a\u7406", "shape": "dot", "size": 25}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Time_Continuous", "label": "\u6620\u5c04\u5230", "title": "\u6620\u5c04\u5230", "to": "FT"}, {"arrows": "to", "from": "Time_Continuous", "label": "\u6620\u5c04\u5230", "title": "\u6620\u5c04\u5230", "to": "LT"}, {"arrows": "to", "from": "Time_Discrete", "label": "\u6620\u5c04\u5230", "title": "\u6620\u5c04\u5230", "to": "DTFT"}, {"arrows": "to", "from": "Time_Discrete", "label": "\u6620\u5c04\u5230", "title": "\u6620\u5c04\u5230", "to": "ZT"}, {"arrows": "to", "from": "FT", "label": "\u7ed3\u679c\u4f4d\u4e8e", "title": "\u7ed3\u679c\u4f4d\u4e8e", "to": "Freq_Continuous"}, {"arrows": "to", "from": "DTFT", "label": "\u7ed3\u679c\u4f4d\u4e8e", "title": "\u7ed3\u679c\u4f4d\u4e8e", "to": "Freq_Discrete"}, {"arrows": "to", "from": "FT", "label": "s = j\u03a9 \u5904\u7684\u7279\u4f8b", "title": "s = j\u03a9 \u5904\u7684\u7279\u4f8b", "to": "LT"}, {"arrows": "to", "from": "DTFT", "label": "z = e^(j\u03c9) \u5904\u7684\u7279\u4f8b (\u5355\u4f4d\u5706)", "title": "z = e^(j\u03c9) \u5904\u7684\u7279\u4f8b (\u5355\u4f4d\u5706)", "to": "ZT"}, {"arrows": "to", "from": "LT", "label": "\u901a\u8fc7\u51b2\u6fc0\u54cd\u5e94\u4e0d\u53d8\u6cd5/\u53cc\u7ebf\u6027\u53d8\u6362\u6620\u5c04", "title": "\u901a\u8fc7\u51b2\u6fc0\u54cd\u5e94\u4e0d\u53d8\u6cd5/\u53cc\u7ebf\u6027\u53d8\u6362\u6620\u5c04", "to": "ZT"}, {"arrows": "to", "from": "DTFT", "label": "\u9891\u57df\u79bb\u6563\u62bd\u6837\u5f97\u5230", "title": "\u9891\u57df\u79bb\u6563\u62bd\u6837\u5f97\u5230", "to": "DFT"}, {"arrows": "to", "from": "FS", "label": "\u5468\u671f\u4fe1\u53f7\u7684\u5085\u91cc\u53f6\u53d8\u6362", "title": "\u5468\u671f\u4fe1\u53f7\u7684\u5085\u91cc\u53f6\u53d8\u6362", "to": "FT"}, {"arrows": "to", "from": "Sampling", "label": "\u4f5c\u7528\u4e8e", "title": "\u4f5c\u7528\u4e8e", "to": "Time_Continuous"}, {"arrows": "to", "from": "Sampling", "label": "\u8f6c\u6362\u81f3", "title": "\u8f6c\u6362\u81f3", "to": "Time_Discrete"}, {"arrows": "to", "from": "LT", "label": "\u5305\u542b", "title": "\u5305\u542b", "to": "ROC"}, {"arrows": "to", "from": "ZT", "label": "\u5305\u542b", "title": "\u5305\u542b", "to": "ROC"}, {"arrows": "to", "from": "ROC", "label": "\u51b3\u5b9a", "title": "\u51b3\u5b9a", "to": "Stability"}, {"arrows": "to", "from": "Pole_Zero", "label": "\u8fb9\u754c\u7531\u5176\u51b3\u5b9a", "title": "\u8fb9\u754c\u7531\u5176\u51b3\u5b9a", "to": "ROC"}, {"arrows": "to", "from": "Pole_Zero", "label": "\u6781\u70b9\u5728\u5de6\u534a\u5e73\u9762/\u5355\u4f4d\u5706\u5185", "title": "\u6781\u70b9\u5728\u5de6\u534a\u5e73\u9762/\u5355\u4f4d\u5706\u5185", "to": "Stability"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"barnesHut": {"gravitationalConstant": -5000, "centralGravity": 0.1, "springLength": 220, "springConstant": 0.04, "damping": 0.09, "avoidOverlap": 1}, "minVelocity": 0.75}, "nodes": {"font": {"size": 14, "strokeWidth": 2, "strokeColor": "#222222"}}, "edges": {"font": {"size": 11, "align": "middle"}, "smooth": {"type": "dynamic"}}, "manipulation": {"enabled": true, "initiallyActive": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
